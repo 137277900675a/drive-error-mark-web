@@ -3,6 +3,13 @@ import './style.css'
 import App from './App.vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
-createApp(App)
-.use(ElementPlus)
-.mount('#app')
+import { setRouter } from './router'
+
+
+const app = createApp(App)
+    .use(ElementPlus)
+
+// 设置路由
+setRouter(app)
+
+app.mount('#app')
