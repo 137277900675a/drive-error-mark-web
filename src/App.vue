@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import Nav from './components/nav.vue'
+import SideNav from './components/side-nav.vue'
 </script>
 
 <template>
     <div class="container"> <Nav></Nav>
-    <router-view></router-view></div>
+      <div class="main" >
+        <SideNav></SideNav>
+        <router-view></router-view></div>
+    </div>
    
 </template>
 
