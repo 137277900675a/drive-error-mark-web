@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from "vue";
 const isHide = ref(true);
 const hide = () => {
   isHide.value = false;
-}
+};
 const show = () => {
   isHide.value = true;
-}
+};
 // 导出控制可见性的函数
-defineExpose({ hide, show })
-
+defineExpose({ hide, show });
 </script>
 
 <template>
