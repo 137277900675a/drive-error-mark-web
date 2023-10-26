@@ -1,48 +1,86 @@
 <template>
-  <div class="register-page">
-    <div class="register-box">
-      <h1 class="title">注册页面</h1>
+  <div class="container">
+    <div class="login-box">
+      <h2 style="color: black">系统用户注册</h2>
       <form @submit.prevent="handleSubmit">
-        <div class="input-group">
-          <label for="username">
-            <el-icon name="el-icon-user"></el-icon> 用户名：
-          </label>
-          <el-input
-            type="text"
-            id="username"
-            v-model="username"
-            class="input-field"
-          ></el-input>
+        <div class="login-options">
+          <el-tabs
+            v-model="activeName"
+            @tab-click="handleClick"
+            style="margin: 0 -10px"
+          >
+            <el-tab-pane
+              label="账号密码注册"
+              name="password"
+              style="width: 100%"
+            >
+              <div class="form-group">
+                <el-input
+                  v-model="username"
+                  placeholder="用户名"
+                  :prefix-icon="['el-icon', 'user']"
+                />
+                <el-input
+                  v-model="password"
+                  placeholder="密码"
+                  :prefix-icon="['el-icon', 'lock']"
+                  type="password"
+                />
+                <el-input
+                  v-model="email"
+                  placeholder="邮箱"
+                  :prefix-icon="['el-icon', 'message']"
+                />
+              </div>
+            </el-tab-pane>
+          </el-tabs>
         </div>
-        <div class="input-group">
-          <label for="password">
-            <el-icon name="el-icon-lock"></el-icon> 密码：
-          </label>
-          <el-input
-            type="password"
-            id="password"
-            v-model="password"
-            class="input-field"
-          ></el-input>
-        </div>
-        <div class="input-group">
-          <label for="email">
-            <el-icon name="el-icon-message"></el-icon> 邮箱：
-          </label>
-          <el-input
-            type="email"
-            id="email"
-            v-model="email"
-            class="input-field"
-          ></el-input>
-        </div>
-        <div class="input-group">
-          <button type="submit" class="submit-btn">注册</button>
-        </div>
+        <el-button type="primary" style="width: auto">注册</el-button>
       </form>
     </div>
   </div>
 </template>
+
+<script>
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      activeName: "password",
+      username: "",
+      password: "",
+      email: "",
+    };
+  },
+  methods: {
+    handleSubmit() {
+      // Perform registration logic with Axios
+      const registrationData = {
+        type: this.activeName,
+        username: this.username,
+        password: this.password,
+        email: this.email,
+      };
+
+      axios
+        .post("your_registration_endpoint", registrationData)
+        .then((response) => {
+          // Handle the response, e.g., redirect on successful registration
+          console.log(response.data);
+        })
+        .catch((error) => {
+          // Handle registration error
+          console.error(error);
+        });
+    },
+    handleClick(tab) {
+      // Switch registration type when a tab is clicked
+      this.activeName = tab;
+    },
+  },
+};
+</script>
 
 <script setup>
 import { ref } from "vue";
@@ -126,5 +164,10 @@ function handleSubmit() {
   50% {
     transform: translateY(-10px);
   }
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 </style>

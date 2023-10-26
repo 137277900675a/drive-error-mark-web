@@ -4,89 +4,109 @@
       <h2 style="color: black">系统用户登录</h2>
       <form @submit.prevent="handleSubmit">
         <div class="login-options">
-          <a
-            @click="switchLoginType('certificate')"
-            :class="{ active: loginType === 'certificate' }"
-            :style="{
-              textDecoration:
-                loginType === 'certificate' ? 'underline' : 'none',
-              color: loginType === 'certificate' ? 'blue' : 'gray',
-            }"
-            >证书登录</a
+          <el-tabs
+            v-model="activeName"
+            @tab-click="handleClick"
+            style="margin: 0 -10px"
           >
-          <a
-            @click="switchLoginType('password')"
-            :class="{ active: loginType === 'password' }"
-            :style="{
-              textDecoration: loginType === 'password' ? 'underline' : 'none',
-              color: loginType === 'password' ? 'blue' : 'gray',
-            }"
-            >账号密码登录</a
-          >
+            <el-tab-pane
+              label="证书登录"
+              name="certificate"
+              style="width: 100%"
+            >
+              <div class="form-group">
+                <el-input
+                  v-model="certificate"
+                  placeholder="证书编号"
+                  :prefix-icon="User"
+                />
+                <el-input
+                  v-model="certificatePassword"
+                  placeholder="证书密码"
+                  :prefix-icon="Lock"
+                  type="password"
+                />
+              </div>
+            </el-tab-pane>
+            <el-tab-pane label="账密登录" name="password" style="width: 100%">
+              <div class="form-group">
+                <el-input
+                  v-model="username"
+                  placeholder="用户名"
+                  :prefix-icon="User"
+                />
+                <!-- <i class="el-icon-edit"></i> -->
+                <el-input
+                  v-model="password"
+                  placeholder="密码"
+                  :prefix-icon="Lock"
+                  type="password"
+                />
+              </div>
+            </el-tab-pane>
+          </el-tabs>
         </div>
-        <div class="form-group" v-if="loginType === 'certificate'">
-          <label for="certificate" style="color: black"> </label>
-          <input
-            type="text"
-            id="certificate"
-            v-model="certificate"
-            placeholder="证书编号"
-          />
-          <br />
-          <label for="password" style="color: black"> </label>
-          <input
-            type="password"
-            id="password"
-            v-model="password"
-            placeholder="证书密码"
-          /><br />
-        </div>
-        <div class="form-group" v-if="loginType === 'password'">
-          <label for="username" style="color: black"> </label>
-          <input
-            type="text"
-            id="username"
-            v-model="username"
-            placeholder="用户名"
-          /><br />
-          <label for="password" style="color: black"> </label>
-          <input
-            type="password"
-            id="password"
-            v-model="password"
-            placeholder="密码"
-          /><br />
-        </div>
-        <button type="submit">登录</button>
+        <el-button type="primary" style="width: auto">登录</el-button>
       </form>
     </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import axios from "axios";
 export default {
   data() {
     return {
-      loginType: "certificate",
+      activeName: "certificate",
       username: "",
       certificate: "",
+      certificatePassword: "",
       password: "",
     };
   },
   methods: {
     handleSubmit() {
-      // 在这里编写登录逻辑
-      console.log("登录方式:", this.loginType);
-      console.log("用户名:", this.username);
-      console.log("证书编号:", this.certificate);
-      console.log("密码:", this.password);
+      // Perform login logic with Axios
+      const loginData = {
+        type: this.activeName,
+        username: this.username,
+        certificate: this.certificate,
+        password:
+          this.activeName === "certificate"
+            ? this.certificatePassword
+            : this.password,
+      };
+
+      axios
+        .post("your_login_endpoint", loginData)
+        .then((response) => {
+          // Handle the response, e.g., redirect on successful login
+          console.log(response.data);
+        })
+        .catch((error) => {
+          // Handle login error
+          console.error(error);
+        });
     },
-    switchLoginType(type) {
-      this.loginType = type;
+    handleClick(tab) {
+      // Switch login type when a tab is clicked
+      this.activeName = tab;
     },
   },
 };
 </script>
+<script setup lang="ts">
+import { User, Lock } from "@element-plus/icons-vue";
+</script>
+
+<style scoped>
+/* Your existing styles can remain as they are */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+</style>
 
 <style scoped>
 * {
