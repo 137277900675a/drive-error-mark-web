@@ -5,9 +5,10 @@
       <form @submit.prevent="handleSubmit">
         <div class="login-options">
           <el-tabs
-            v-model="activeName"
+            v-model="activeTab"
             @tab-click="handleClick"
             style="margin: 0 -10px"
+            stretch
           >
             <el-tab-pane
               label="证书登录"
@@ -26,6 +27,7 @@
                   :prefix-icon="Lock"
                   type="password"
                 />
+                <div class="losepass"><a href="#">忘记密码</a></div>
               </div>
             </el-tab-pane>
             <el-tab-pane label="账密登录" name="password" style="width: 100%">
@@ -42,11 +44,14 @@
                   :prefix-icon="Lock"
                   type="password"
                 />
+                <div class="losepass"><a href="#">忘记密码</a></div>
               </div>
             </el-tab-pane>
           </el-tabs>
         </div>
-        <el-button type="primary" style="width: auto">登录</el-button>
+        <el-button @click="login" type="primary" style="width: auto"
+          >登录</el-button
+        >
       </form>
     </div>
   </div>
@@ -54,43 +59,56 @@
 
 <script lang="ts">
 import axios from "axios";
+
 export default {
   data() {
     return {
-      activeName: "certificate",
+      activeTab: "password",
       username: "",
-      certificate: "",
-      certificatePassword: "",
       password: "",
+      error: "",
     };
   },
   methods: {
-    handleSubmit() {
-      // Perform login logic with Axios
-      const loginData = {
-        type: this.activeName,
-        username: this.username,
-        certificate: this.certificate,
-        password:
-          this.activeName === "certificate"
-            ? this.certificatePassword
-            : this.password,
-      };
+    async login() {
+      // 获取用v-model设置的password的值
+      const password = this.password;
+      const username = this.username;
+      try {
+        const response = await axios.post(
+          "/api/login",
+          {},
+          { auth: { username, password } } //第一个参数是地址，第二个是body，第三个是设置请求头配置
+        );
 
-      axios
-        .post("your_login_endpoint", loginData)
-        .then((response) => {
-          // Handle the response, e.g., redirect on successful login
+        if (response.data.success) {
+          // 登录成功，跳转到首页
           console.log(response.data);
-        })
-        .catch((error) => {
-          // Handle login error
-          console.error(error);
-        });
+          // this.$router.push("/");
+        } else {
+          // 登录失败，显示错误信息
+          this.error = response.data.message;
+        }
+      } catch (error) {
+        // 请求失败，显示错误信息
+        this.error = "请求失败，请稍后重试";
+      }
     },
-    handleClick(tab) {
-      // Switch login type when a tab is clicked
-      this.activeName = tab;
+    async qrcodeLogin() {
+      try {
+        const response = await axios.post("https://your-api-url/qrcode-login");
+
+        if (response.data.success) {
+          // 二维码登录成功，跳转到首页
+          this.$router.push("/");
+        } else {
+          // 二维码登录失败，显示错误信息
+          this.error = response.data.message;
+        }
+      } catch (error) {
+        // 请求失败，显示错误信息
+        this.error = "请求失败，请稍后重试";
+      }
     },
   },
 };
@@ -114,7 +132,11 @@ import { User, Lock } from "@element-plus/icons-vue";
   padding: 0;
   box-sizing: border-box;
 }
-
+.losepass a {
+  display: flex;
+  justify-content: right;
+  font-size: 0.75em;
+}
 .container {
   width: 100%;
   height: 100vh;
@@ -161,7 +183,6 @@ import { User, Lock } from "@element-plus/icons-vue";
 .login-options {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
 }
 
 .login-options a {
@@ -178,7 +199,8 @@ import { User, Lock } from "@element-plus/icons-vue";
 }
 
 .form-group {
-  margin-bottom: 20px; /* 更改输入框之间的间距为30px */
+  /* margin-bottom: 20px; */
+  /* 更改输入框之间的间距为30px */
 }
 
 label {
