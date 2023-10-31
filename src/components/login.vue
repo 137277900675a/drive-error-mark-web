@@ -37,7 +37,7 @@
                   placeholder="用户名"
                   :prefix-icon="User"
                 />
-                <!-- <i class="el-icon-edit"></i> -->
+
                 <el-input
                   v-model="password"
                   placeholder="密码"
@@ -75,6 +75,9 @@ export default {
       const password = this.password;
       const username = this.username;
       try {
+        axios.get("/api/captcha").then((response) => {
+          console.log(response);
+        });
         const response = await axios.post(
           "/api/login",
           {},
